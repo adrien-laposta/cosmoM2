@@ -1,62 +1,71 @@
-import sys, platform, os
+import os
+import time
+
 import matplotlib.pyplot as plt
 import numpy as np
-from toolbox import *
-import time
-import math
 
-def compute_fisher(freq_list, fsky,names, cl_path):
+import toolbox
+
+
+def compute_fisher(freq_list, fsky, names, cl_path):
 
     start_time = time.time()
 
-    deriv = [np.load(cl_path + "deriv_" + names[i] + ".npy") for i in range(len(names))]
+    deriv = [
+        np.load(cl_path + "deriv_" + names[i] + ".npy")
+        for i in range(len(names))
+    ]
     C_ell = np.load(cl_path + "CL.npy")
 
     print("Importation : %s secondes" % (time.time() - start_time))
 
+    n_ell = C_ell.shape[0]
     n_params = len(deriv)
     n_freqs = len(freq_list)
     fisher = np.zeros((n_params, n_params))
 
     start_time = time.time()
 
-    for ell in range(len(C_ell)):
-        trace_fisher = []
-        ls = np.arange(len(C_ell) + 2)[2:]
-        pre_fact = fsky * (2 * ls + 1)/2
-        inverse_c_ell = np.linalg.inv(C_ell[ell][:n_freqs,:n_freqs])
+    for ell in range(n_ell):
+        ls = np.arange(n_ell + 2)[2:]
+        pre_fact = fsky * (2 * ls + 1) / 2
+        inverse_c_ell = np.linalg.inv(C_ell[ell][:n_freqs, :n_freqs])
         for i in range(n_params):
             for j in range(n_params):
-                trace_mat_prod = np.trace(inverse_c_ell.dot(deriv[i][ell][:n_freqs, :n_freqs].dot(inverse_c_ell.dot(deriv[j][ell][:n_freqs, :n_freqs]))))
+                trace_mat_prod = np.trace(
+                    inverse_c_ell.dot(deriv[i][ell][:n_freqs, :n_freqs].dot(
+                        inverse_c_ell.dot(deriv[j][ell][:n_freqs, :n_freqs]))))
                 fisher[i, j] += pre_fact[ell] * trace_mat_prod
 
     print("Construction de Fisher : %s secondes" % (time.time() - start_time))
 
     #print(np.linalg.eigvals(F))
-    return(fisher)
+    return fisher
 
-def constraints(freq_list, fsky,names, cl_path):
+
+def constraints(freq_list, fsky, names, cl_path):
 
     fisher = compute_fisher(freq_list, fsky, names, cl_path)
     #print(fisher)
     print(np.linalg.eigvals(fisher))
-    cov = np.linalg.inv(fisher)
 
-    return(cov)
+    return np.linalg.inv(fisher)
+
 
 def norm_fisher(freq_list, fsky, names, cl_path):
 
     fisher = compute_fisher(freq_list, fsky, names, cl_path)
-    norm_fisher = cov2corr(fisher, remove_diag=False)
-    eigen = np.linalg.eigvals(fisher)
+    #eigen = np.linalg.eigvals(fisher)
     print(np.linalg.eigvals(fisher))
     #print("\n")
     #print("Normalized Fisher Matrix : ",norm_F)
     #print("\n")
     #print("Eigenvalues : ",eigen)
-    return(norm_fisher)
+    return toolbox.cov2corr(fisher, remove_diag=False)
 
-def corrmat_evol(freq_list, name_param, save_path_fig, save_path_dat, fsky,names, cl_path):
+
+def corrmat_evol(freq_list, name_param, save_path_fig, save_path_dat, fsky,
+                 names, cl_path):
 
     fig = plt.figure(figsize=(24, 13.5))
     sig_mat = []
@@ -65,32 +74,35 @@ def corrmat_evol(freq_list, name_param, save_path_fig, save_path_dat, fsky,names
 
         print("\n")
         print("-" * 15)
-        print("Debut de la boucle a %s frequences" %(i + 1))
+        print("Debut de la boucle a %s frequences" % (i + 1))
 
         start_time_boucle = time.time()
         covar = constraints(freq_list[:i + 1], fsky, names, cl_path)
         sig = np.sqrt(np.diagonal(covar))
         sig_mat.append(sig)
         np.savetxt(save_path_dat + str(freq_list[:i + 1]) + ".dat", covar)
-        corr = cov2corr(covar, remove_diag=False)
+        corr = toolbox.cov2corr(covar, remove_diag=False)
         ax = fig.add_subplot(231 + i)
-        im = ax.imshow(corr, vmin= - 1, vmax= + 1, cmap='seismic')
-        ax.set_xticks(np.arange(0, len(name_param), 1));
-        ax.set_yticks(np.arange(0, len(name_param), 1));
+        im = ax.imshow(corr, vmin=-1, vmax=+1, cmap='seismic')
+        ax.set_xticks(np.arange(0, len(name_param), 1))
+        ax.set_yticks(np.arange(0, len(name_param), 1))
         ax.set_xticklabels(name_param)
         ax.set_yticklabels(name_param)
         ax.set_title(r'f = ' + str(freq_list[:i + 1]))
 
-        print("Fin de la boucle, temps d'execution : %s secondes" % (time.time() - start_time_boucle))
+        print("Fin de la boucle, temps d'execution : %s secondes" %
+              (time.time() - start_time_boucle))
         print("-" * 15)
 
     cb_ax = fig.add_axes([0.92, 0.1, 0.02, 0.8])
-    cbar = fig.colorbar(im, cax=cb_ax)
+    fig.colorbar(im, cax=cb_ax)
     sig_mat = np.array(sig_mat)
-    np.savetxt(save_path_dat + "sigmas.dat",sig_mat)
-    fig.savefig(save_path_fig + "corrmat_var.png", dpi=300)
+    np.savetxt(os.path.join(save_path_dat, "sigmas.dat"), sig_mat)
+    fig.savefig(os.path.join(save_path_fig, "corrmat_var.png"), dpi=300)
 
-def fisher_norm_evol(freq_list, name_param, save_path_fig, fsky, names, cl_path):
+
+def fisher_norm_evol(freq_list, name_param, save_path_fig, fsky, names,
+                     cl_path):
 
     n_freqs = len(freq_list)
     for a in range(n_freqs):
@@ -99,64 +111,81 @@ def fisher_norm_evol(freq_list, name_param, save_path_fig, fsky, names, cl_path)
         plt.rc('ytick', labelsize=13.5)
         print("\n")
         print("-" * 15)
-        print("Debut de la boucle a %s frequences" %(a + 1))
+        print("Debut de la boucle a %s frequences" % (a + 1))
         start_time_boucle = time.time()
         Fnorm = norm_fisher(freq_list[:a + 1], fsky, names, cl_path)
         ax = fig.add_subplot(111)
-        im = ax.imshow(Fnorm, vmin= - 1, vmax= + 1, cmap='seismic')
-        ax.set_xticks(np.arange(0, len(name_param), 1));
-        ax.set_yticks(np.arange(0, len(name_param), 1));
+        ax.imshow(Fnorm, vmin=-1, vmax=+1, cmap='seismic')
+        ax.set_xticks(np.arange(0, len(name_param), 1))
+        ax.set_yticks(np.arange(0, len(name_param), 1))
         ax.set_xticklabels(name_param)
         ax.set_yticklabels(name_param)
         ax.set_title(r'f = ' + str(freq_list[:a + 1]), fontsize=13.5)
         for i in range(len(Fnorm)):
             for j in range(len(Fnorm)):
-                ax.text(j, i, "{:0.3f}".format(Fnorm[i, j]), horizontalalignment="center",
-                     color="black",fontsize=13.5)
-        print("Fin de la boucle, temps d'execution : %s secondes" % (time.time() - start_time_boucle))
+                ax.text(j,
+                        i,
+                        "{:0.3f}".format(Fnorm[i, j]),
+                        horizontalalignment="center",
+                        color="black",
+                        fontsize=13.5)
+        print("Fin de la boucle, temps d'execution : %s secondes" %
+              (time.time() - start_time_boucle))
         print("-" * 15)
         fig.tight_layout()
-        fig.savefig(save_path_fig + "fisher_norm_var" + str(a) + ".png",dpi=300)
+        fig.savefig(os.path.join(save_path_fig,
+                                 "fisher_norm_var{}.png".format(a)),
+                    dpi=300)
 
-def cosmo_parameters_variation(cosmo_parameters, fg_parameters, freq_list, name_param, save_path_fig, save_path_dat):
+
+def cosmo_parameters_variation(cosmo_parameters, fg_parameters, freq_list,
+                               name_param, save_path_fig, save_path_dat):
 
     fig = plt.figure(figsize=(24, 13.5))
     plt.rc('xtick', labelsize=14)
     plt.rc('ytick', labelsize=14)
     colors = ['darkred', 'darkgreen', 'darkblue']
-    n_params_cosmo = len(cosmo_parameters)
-    for i in range(n_params_cosmo):
-        sigma = np.loadtxt(save_path_dat + "sigmas.dat")[:, i]
-        index_list = [1,2,4]
+    sigmas = np.loadtxt(save_path_dat + "sigmas.dat")
+    for i, cosmo_parameter in enumerate(cosmo_parameters):
+        sigma = sigmas[:, i]
+        index_list = [1, 2, 4]
         sigma_3_plot = [sigma[index] for index in index_list]
         ax = fig.add_subplot(231 + i)
-        ax.grid(True,linestyle='--')
-        abs = np.linspace(cosmo_parameters[i] - 4 * np.max(sigma_3_plot), cosmo_parameters[i] + 4 * np.max(sigma_3_plot),  500)
+        ax.grid(True, linestyle='--')
+        x = np.linspace(cosmo_parameter - 4 * np.max(sigma_3_plot),
+                        cosmo_parameter + 4 * np.max(sigma_3_plot), 500)
         for index in index_list:
-            ord = gaussian(abs, cosmo_parameters[i], sigma[index])
-            ax.plot(abs, ord/np.max(ord), label=r'$N_{freq}$ = %s' %(index + 2),color=colors[math.floor(index/2)])
+            y = toolbox.gaussian(x, cosmo_parameter, sigma[index])
+            ax.plot(x,
+                    y / np.max(y),
+                    label=r'$N_{freq}$ = %s' % (index + 2),
+                    color=colors[index // 2])
         ax.set_title(name_param[i], fontsize=20)
         handles, labels = ax.get_legend_handles_labels()
     fig.legend(handles, labels, loc='upper right', fontsize=18)
     fig.tight_layout()
-    fig.savefig(save_path_fig + "forecast_var.png",dpi=300)
+    fig.savefig(os.path.join(save_path_fig, "forecast_var.png"), dpi=300)
 
     fig = plt.figure(figsize=(20, 20))
     plt.rc('xtick', labelsize=14)
     plt.rc('ytick', labelsize=14)
     colors = ['darkred', 'darkgreen', 'darkblue']
-    for i in range(len(fg_parameters)):
-        sigma = np.loadtxt(save_path_dat + "sigmas.dat")[:, i + 6]
-        index_list = [1,2,4]
+    for i, fg_parameter in enumerate(fg_parameters):
+        sigma = sigmas[:, i + 6]
+        index_list = [1, 2, 4]
         sigma_3_plot = [sigma[index] for index in index_list]
         ax = fig.add_subplot(331 + i)
         ax.grid(True, linestyle='--')
-        abs = np.linspace(fg_parameters[i] - 4 * np.max(sigma_3_plot), fg_parameters[i] + 4 * np.max(sigma_3_plot), 500)
+        x = np.linspace(fg_parameter - 4 * np.max(sigma_3_plot),
+                        fg_parameter + 4 * np.max(sigma_3_plot), 500)
         for index in index_list:
-            ord = gaussian(abs, fg_parameters[i], sigma[index])
-            ax.plot(abs, ord/np.max(ord), label=r'$N_{freq}$ = %s' %(index + 2),color=colors[math.floor(index/2)])
+            y = toolbox.gaussian(x, fg_parameter, sigma[index])
+            ax.plot(x,
+                    y / np.max(y),
+                    label=r'$N_{freq}$ = %s' % (index + 2),
+                    color=colors[index // 2])
         ax.set_title(name_param[i + 6], fontsize=20)
         handles, labels = ax.get_legend_handles_labels()
-    fig.legend(handles, labels, loc=(0.6,0.1), fontsize=24)
+    fig.legend(handles, labels, loc=(0.6, 0.1), fontsize=24)
     fig.tight_layout()
-    fig.savefig(save_path_fig + "forecast_var_fg.png",dpi=300)
+    fig.savefig(os.path.join(save_path_fig, "forecast_var_fg.png"), dpi=300)
