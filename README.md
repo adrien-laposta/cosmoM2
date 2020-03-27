@@ -19,3 +19,25 @@
 
   You can also have a plot showing the influence of adding frequencies on the constraints on the
   cosmological parameters (by setting `plot_cosmo_parameters` to `True`).
+
+
+### Forecast of cosmo parameters with CMB Likelihood
+  - Everything needed to do that can be found in the true_fisher_forecast directory.
+
+  The first thing to do is to generate datas with `pre_calc_fisher_upgraded.py`. You can generate these datas by
+  setting the `calculate_data` variable to `True` in the `launch_cmb_fisher_upgraded.py` script. This variable is
+  set to `True` by default because datas have to be computed.
+  If the `binned` variable is set to true the datas (power spectrum, covariance matrix) will be generated with bins.
+
+  Then, the `calculate_fisher_matrix` variable is used to generate and save the standard deviations for the cosmological
+  parameters for all the `modes` we want.
+
+  To plot the forecast you just have to set `plot_forecast` variable to `true`.
+
+  - A little script, `compare_bin_unbin.py` is used to compare cosmological parameters constraints
+  with and without binning. You just have to run this script if you want to do that.
+
+  - The `binned_spectrum.py` is used to plot the binned spectrum and its errorbars for
+  LAT145 and Planck143. You juste have to run the script.
+
+  - To launch these two scripts, you have to compute and save datas first.
