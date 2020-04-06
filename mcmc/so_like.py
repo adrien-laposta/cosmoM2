@@ -8,7 +8,7 @@ path_to_mcmc_data = '/sps/planck/Users/tlouis/development/test_adrien/scripts/mc
 
 data = np.load(os.path.join(path_to_mcmc_data, 'data_sim.npy'))
 
-covariances = np.load(os.path.join(path_to_mcmc_data, 'covariance.npy'))
+inv_covariances = np.load(os.path.join(path_to_mcmc_data, 'inv_covariance.npy'))
 
 lmax = 4500
 lmin = 2
@@ -90,6 +90,6 @@ def minus_log_like(a_tSZ, a_kSZ, a_p, beta_p, a_c, beta_c, n_CIBC, a_s, T_d,
 
     # Compute the likelihood
     minloglike_ell = [(data[ell] - model_list[ell]).dot(
-                      covariances[ell].dot(data[ell] - model_list[ell])) for ell in range(n_bin)]
+                      inv_covariances[ell].dot(data[ell] - model_list[ell])) for ell in range(n_bin)]
 
-    return np.sum(minloglike_ell)
+    return -0.5*np.sum(minloglike_ell)

@@ -52,13 +52,15 @@ def get_data_sims_cov(frequency_list, ps_dict, cov_dict):
         X = toolbox.svd_pow(cov_mat_list[ell], 0.5).dot(X)
         data_sims.append(data_sims_mean[ell] + X)
     data_sims = np.array(data_sims)
-    return(data_sims, cov_mat_list)
+    inv_cov_mat_list = np.array([np.linalg.inv(
+                                 element) for element in cov_mat_list])
+    return(data_sims, inv_cov_mat_list)
 
 save_mcmc_path = 'mcmc_precalc/'
 if not os.path.isdir(save_mcmc_path):
     os.makedirs(save_mcmc_path)
 
-sims, cov_mat_list = get_data_sims_cov(frequencies, power_spectrum, covariance)
+sims, inv_cov_mat_list = get_data_sims_cov(frequencies, power_spectrum, covariance)
 
 np.save(os.path.join(save_mcmc_path, 'data_sim'), sims)
-np.save(os.path.join(save_mcmc_path, 'covariance'), cov_mat_list)
+np.save(os.path.join(save_mcmc_path, 'inv_covariance'), inv_cov_mat_list)
