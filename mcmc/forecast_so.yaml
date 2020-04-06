@@ -1,14 +1,17 @@
 params:
+#COSMO PARAMETERS
+  cosmomc_theta:
+    prior:
+      min: 0.0103
+      max: 0.0105
+    proposal: 1.5e-6
+    latex: \theta_\mathrm{MC}
 
   logA:
     prior:
-      min: 1.61
-      max: 3.91
-    #ref:
-      #dist: norm
-      #loc: 3.05
-      #scale: 0.001
-    #proposal: 0.001
+      min: 2.6
+      max: 3.5
+    proposal: 0.0036
     latex: \log(10^{10} A_\mathrm{s})
     drop: true
 
@@ -17,74 +20,113 @@ params:
     latex: A_\mathrm{s}
 
   H0:
-    prior:
-      min: 20
-      max: 100
-    #ref:
-      #dist: norm
-      #loc: 68
-      #scale: 0.07
-    #proposal: 0.07
     latex: H_0
 
   ns:
     prior:
-      min: 0.8
-      max: 1.2
-    #ref:
-      #dist: norm
-      #loc: 0.965
-      #scale: 0.004
-    #proposal: 0.002
+      min: 0.9
+      max: 1.1
+    proposal: 0.0033
     latex: n_\mathrm{s}
 
   ombh2:
     prior:
-      min: 0.005
-      max: 0.1
-    #ref:
-    #  dist: norm
-    #  loc: 0.0224
-    #  scale: 0.0001
-    #proposal: 0.0001
+      min: 0.017
+      max: 0.027
+    proposal: 6.5e-5
     latex: \Omega_\mathrm{b} h^2
 
   omch2:
     prior:
-      min: 0.001
-      max: 0.99
-    #ref:
-    #  dist: norm
-    #  loc: 0.12
-    #  scale: 0.001
-    #proposal: 0.0005
+      min: 0.09
+      max: 0.15
+    proposal: 0.0011
     latex: \Omega_\mathrm{c} h^2
 
   tau:
     prior:
-      min: 0.01
-      max: 0.8
-    #ref:
-    #  dist: norm
-    #  loc: 0.055
-    #  scale: 0.006
-    #proposal: 0.003
+      dist: norm
+      loc: 0.0544
+      scale: 0.0073
+    proposal: 0.0073
     latex: \tau_\mathrm{reio}
+#FOREGROUNDS PARAMETERS
+  a_tSZ: 3.3
+    #prior:
+      #min: 3.0
+      #max: 3.6
+    #proposal: 0.05
+    #latex: a_\mathrm{tSZ}
 
+  a_kSZ: 1.66
+    #prior:
+      #min: 1.4
+      #max: 1.8
+    #proposal: 0.1
+    #latex: a_\mathrm{kSZ}
 
+  a_p: 6.91
+    #prior:
+      #min: 6.2
+      #max: 7.6
+    #proposal: 0.075
+    #latex: a_p
+
+  beta_p: 2.07
+    #prior:
+      #min: 1.8
+      #max: 2.2
+    #proposal: 0.015
+    #latex: \beta_p
+
+  a_c: 4.88
+    #prior:
+      #min: 4.4
+      #max: 5.4
+    #proposal: 0.12
+    #latex: a_c
+
+  beta_c: 2.2
+    #prior:
+      #min: 2.0
+      #max: 2.4
+    #proposal: 0.03
+    #latex: \beta_c
+
+  n_CIBC: 1.2
+    #prior:
+      #min: 1.0
+      #max: 1.4
+    #proposal: 0.045
+    #latex: n_\mathrm{CIBC}
+
+  a_s: 3.09
+    #prior:
+      #min: 2.8
+      #max: 3.4
+    #proposal: 0.01
+    #latex: a_s
+
+  T_d: 9.6
+    #prior:
+      #min:  8.60
+      #max: 10.60
+    #proposal: 0.6
+    #latex: T_d
 
 likelihood:
-  one:
-  #so_forecast: import_module('so_like').minus_log_like
-  #speed: 500
+  #one:
+  so_forecast: import_module('so_like').minus_log_like
 
 
 theory:
   camb:
-    stop_at_error: True
+    stop_at_error: False
+    extra_args:
+      lens_potential_accuracy: 1
 
 sampler:
   mcmc:
 
 modules: ''
-output: 'chains/so_forecast'
+output: '/sps/planck/Users/tlouis/development/test_adrien/scripts/chains/so_forecast'
