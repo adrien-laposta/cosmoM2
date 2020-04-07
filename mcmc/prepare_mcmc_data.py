@@ -65,7 +65,7 @@ def get_cl_dict(cosmo_parameters, fg_parameters, ell_max, freq_list, bin_width):
     }
 
     pars = camb.CAMBparams()
-    pars.set_cosmology(H0=cosmo_parameters[0],
+    pars.set_cosmology(cosmomc_theta=cosmo_parameters[0],
                        ombh2=cosmo_parameters[1],
                        omch2=cosmo_parameters[2],
                        mnu=0.06,
@@ -249,7 +249,7 @@ save_mcmc_path = 'mcmc_precalc/'
 if not os.path.isdir(save_mcmc_path):
     os.makedirs(save_mcmc_path)
 
-planck_parameters = [67.66, 0.02242, 0.11933, 3.047, 0.9665, 0.0561]
+planck_parameters = [0.0104101, 0.02242, 0.11933, 3.047, 0.9665, 0.0561]
 fg_parameters = [3.3, 1.66, 6.91, 2.07, 4.88, 2.2, 3.09]
 frequencies = [93, 145, 225]
 
