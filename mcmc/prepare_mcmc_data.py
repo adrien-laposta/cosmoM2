@@ -119,7 +119,7 @@ def get_cl_dict(cosmo_parameters, fg_parameters, ell_max, freq_list, bin_width):
     return c_ell_dict
 
 def get_covariance_matrix(cosmo_parameters, fg_parameters, ell_max, freq_list,
-                          noise_data_path, n_split, bin_width):
+                          noise_data_path, n_split, bin_width, fsky):
 
 
     power_spectra = get_cl_dict(cosmo_parameters, fg_parameters,
@@ -154,7 +154,7 @@ def get_covariance_matrix(cosmo_parameters, fg_parameters, ell_max, freq_list,
                 Y = key2[0][1]
 
 
-                pre_fact = 1 / (2 * ell_list + 1) / bin_width
+                pre_fact = fsky / (2 * ell_list + 1) / bin_width
 
 
 
@@ -252,7 +252,7 @@ if not os.path.isdir(save_mcmc_path):
 planck_parameters = [0.0104101, 0.02242, 0.11933, 3.047, 0.9665, 0.0561]
 fg_parameters = [3.3, 1.66, 6.91, 2.07, 4.88, 2.2, 3.09]
 frequencies = [93, 145, 225]
-
+fsky = 0.4
 n_split = 2
 ell_max = 4500
 bin_width = 20
@@ -262,7 +262,7 @@ power_spectrum, covariance = get_covariance_matrix(planck_parameters,
                                                    fg_parameters, ell_max,
                                                    frequencies,
                                                    noise_data_path, n_split,
-                                                   bin_width)
+                                                   bin_width, fsky)
 
 
 sims, inv_cov_mat_list = get_data_sims_cov(frequencies, power_spectrum, covariance)

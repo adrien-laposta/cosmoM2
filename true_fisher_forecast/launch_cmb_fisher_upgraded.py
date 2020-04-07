@@ -21,13 +21,20 @@ name_param_fig = [
 
 names = [
     'H0', 'Ombh2', 'Omch2', 'As', 'ns', 'tau', 'atSZ', 'akSZ', 'ap', 'betap',
-    'ac', 'betac', 'amp_s'
-]
+    'ac', 'betac', 'amp_s']
+#names = [
+        #'H0', 'Ombh2', 'Omch2', 'As', 'ns', 'tau']
 
-planck_parameters = [67.4, 0.02207, 0.1196, 3.098, 0.9616, 0.097]
+
+
+
+
+planck_parameters = [67.66, 0.02242, 0.11933, 3.047, 0.9665, 0.0561]
 fg_parameters = [3.3, 1.66, 6.91, 2.07, 4.88, 2.2, 3.09]
 
-frequency_list = [27, 39, 93, 145, 225, 280]
+#frequency_list = [27, 39, 93, 145, 225, 280]
+
+frequency_list = [93, 145, 225]
 ### The frequency list must be in ascending order
 
 
@@ -49,11 +56,11 @@ plot_forecast = False
 if calculate_data:
     from pre_calc_fisher_upgraded import pre_calculation
     pre_calculation(planck_parameters, fg_parameters, ell_max, frequency_list,
-                    noise_data_path, cl_path, n_split, names, binned, bin_width)
+                    noise_data_path, cl_path, n_split, names, binned, bin_width, fsky)
 
 if create_fisher_matrix:
     from fisher_tools_upgraded import constraints
-    constraints(mode, fsky, names, cl_path, save_path_dat, binned)
+    constraints(mode, names, cl_path, save_path_dat, binned)
 
 if plot_forecast:
     from fisher_tools_upgraded import forecast_true_fisher

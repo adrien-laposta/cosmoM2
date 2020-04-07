@@ -103,7 +103,7 @@ def get_cl_dict(cosmo_parameters, fg_parameters, ell_max, freq_list,
                               ns=cosmo_parameters[4],
                               r=0)
 
-    pars.set_for_lmax(ell_max - 1, lens_potential_accuracy=0)
+    pars.set_for_lmax(ell_max - 1, lens_potential_accuracy=1)
     results = camb.get_results(pars)
     powers = results.get_cmb_power_spectra(pars, CMB_unit="muK")
     totCL = powers['total']
@@ -203,7 +203,7 @@ def get_cl_derivatives(cosmo_parameters, fg_parameters, ell_max, freq_list,
 
 
 def get_covariance_matrix(cosmo_parameters, fg_parameters, ell_max, freq_list,
-                          noise_data_path, n_split, binned, bin_width):
+                          noise_data_path, n_split, binned, bin_width, fsky):
 
 
     power_spectrums = get_cl_dict(cosmo_parameters, fg_parameters,
@@ -241,9 +241,9 @@ def get_covariance_matrix(cosmo_parameters, fg_parameters, ell_max, freq_list,
                 Y = key2[0][1]
 
                 if binned:
-                    pre_fact = 1 / (2 * ell_list + 1) / bin_width
+                    pre_fact = fsky / (2 * ell_list + 1) / bin_width
                 else:
-                    pre_fact = 1 / (2 * ell_list + 1)
+                    pre_fact = fsky / (2 * ell_list + 1)
 
 
 
@@ -292,7 +292,7 @@ def get_covariance_matrix(cosmo_parameters, fg_parameters, ell_max, freq_list,
 
 def pre_calculation(cosmo_parameters, fg_parameters, ell_max, freq_list,
                     noise_data_path, save_path, n_split,
-                    names, binned, bin_width):
+                    names, binned, bin_width, fsky):
 
     if not os.path.isdir(save_path):
         os.mkdir(save_path)
@@ -310,7 +310,7 @@ def pre_calculation(cosmo_parameters, fg_parameters, ell_max, freq_list,
     cov_dict = get_covariance_matrix(cosmo_parameters, fg_parameters,
                                               ell_max, freq_list,
                                               noise_data_path, n_split,
-                                              binned, bin_width)
+                                              binned, bin_width, fsky)
 
     print('Fin de creation du dictionnaire')
     print('\n')

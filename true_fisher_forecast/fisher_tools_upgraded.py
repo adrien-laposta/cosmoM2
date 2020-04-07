@@ -58,7 +58,7 @@ def construct_covmat_data_vector(mode, names, path_pre_calc, binned):
                     power_spectrums[key] = power_spectrum[key]
 
 
-    n_ell = len(covariance['tt','tt','27x27','27x27'])
+    n_ell = len(covariance['tt','tt','93x93','93x93'])
     n_freqs = len(power_spectrums)
 
     for ell in range(n_ell):
@@ -83,11 +83,12 @@ def construct_covmat_data_vector(mode, names, path_pre_calc, binned):
 
 
 
-def compute_fisher(mode, fsky, names, path_pre_calc, binned):
+def compute_fisher(mode, names, path_pre_calc, binned):
 
     deriv, covariance_matrix = construct_covmat_data_vector(mode, names,
                                                             path_pre_calc,
                                                             binned)
+
     print(np.shape(covariance_matrix[0]))
     print((toolbox.cov2corr(covariance_matrix[0],remove_diag=False)))
     print(np.linalg.eigvals(covariance_matrix[0]))
@@ -115,7 +116,7 @@ def compute_fisher(mode, fsky, names, path_pre_calc, binned):
                 second_term = second_term.reshape((n_cross_freq, 1))
 
                 mat_prod = first_term.dot(inverse_cov_mat.dot(second_term))
-                fisher[i, j] += fsky * mat_prod
+                fisher[i, j] += mat_prod
 
     print('Construction de Fisher : %s secondes' % (time.time() - start_time))
 
@@ -123,11 +124,11 @@ def compute_fisher(mode, fsky, names, path_pre_calc, binned):
     return fisher
 
 
-def constraints(mode, fsky, names, path_pre_calc, save_path_dat, binned):
+def constraints(mode, names, path_pre_calc, save_path_dat, binned):
 
     for element in mode:
 
-        fisher = compute_fisher(element, fsky, names, path_pre_calc, binned)
+        fisher = compute_fisher(element, names, path_pre_calc, binned)
         print(np.linalg.eigvals(fisher))
         covar = np.linalg.inv(fisher)
         sig = np.sqrt(np.diagonal(covar))
