@@ -241,9 +241,9 @@ def get_covariance_matrix(cosmo_parameters, fg_parameters, ell_max, freq_list,
                 Y = key2[0][1]
 
                 if binned:
-                    pre_fact = fsky / (2 * ell_list + 1) / bin_width
+                    pre_fact = 1 / (2 * ell_list + 1) / bin_width / fsky
                 else:
-                    pre_fact = fsky / (2 * ell_list + 1)
+                    pre_fact = 1 / (2 * ell_list + 1) / fsky
 
 
 

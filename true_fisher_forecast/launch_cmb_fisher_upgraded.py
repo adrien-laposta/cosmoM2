@@ -19,11 +19,11 @@ name_param_fig = [
     r'$a_c$', r'$\beta_c$', r'$a_s$'
 ]
 
-names = [
-    'H0', 'Ombh2', 'Omch2', 'As', 'ns', 'tau', 'atSZ', 'akSZ', 'ap', 'betap',
-    'ac', 'betac', 'amp_s']
 #names = [
-        #'H0', 'Ombh2', 'Omch2', 'As', 'ns', 'tau']
+#    'H0', 'Ombh2', 'Omch2', 'As', 'ns', 'tau', 'atSZ', 'akSZ', 'ap', 'betap',
+#    'ac', 'betac', 'amp_s']
+names = [
+        'H0', 'Ombh2', 'Omch2', 'As', 'ns', 'tau']
 
 
 
@@ -49,8 +49,8 @@ bin_width = 20
 
 ################################################################################
 
-calculate_data = True
-create_fisher_matrix = False
+calculate_data = False
+create_fisher_matrix = True
 plot_forecast = False
 
 if calculate_data:
