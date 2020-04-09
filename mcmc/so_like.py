@@ -4,8 +4,8 @@ import mflike as mfl
 import os
 from cobaya.model import get_model
 
-path_to_mcmc_data = '/sps/planck/Users/tlouis/development/test_adrien/scripts/mcmc_precalc/'
-
+#path_to_mcmc_data = '/sps/planck/Users/tlouis/development/test_adrien/scripts/mcmc_precalc/'
+path_to_mcmc_data = 'mcmc_precalc/'
 data = np.load(os.path.join(path_to_mcmc_data, 'data_sim.npy'))
 
 inv_covariances = np.load(os.path.join(path_to_mcmc_data, 'inv_covariance.npy'))
