@@ -58,7 +58,8 @@ params:
     latex: \tau_\mathrm{reio}
 
   m_ncdm: 0.06
-
+  N_ur: 2.0328
+  N_ncdm: 1
 
 #FOREGROUNDS PARAMETERS
   a_tSZ: 3.3
@@ -131,10 +132,12 @@ likelihood:
 
 theory:
   classy:
-    stop_at_error: True
+    stop_at_error: False
     extra_args:
-      N_ur: 2.0328
-      N_ncdm: 1
+      delta_l_max: 2500
+      lensing: yes
+      accurate_lensing: 1
+      non linear: halofit
 
 sampler:
   mcmc:
