@@ -61,3 +61,5 @@ target/
 /true_fisher_forecast/pre_calc/
 /true_fisher_forecast/recover_covar_test/
 /mcmc/outputs/
+/ede/modules/
+/ede/modules2.1.0/
