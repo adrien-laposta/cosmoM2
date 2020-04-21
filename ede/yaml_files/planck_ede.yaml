@@ -1,0 +1,177 @@
+likelihood:
+  #planck_2018_lowl.TT: null
+  #planck_2018_lowl.EE: null
+  #planck_2018_highl_plik.TTTEEE: null
+  #planck_2018_lensing.clik: null
+
+params:
+  logA:
+    prior:
+      min: 2.6
+      max: 3.5
+    ref:
+      dist: norm
+      loc: 3.05
+      scale: 0.001
+    proposal: 0.001
+    latex: \log(10^{10} A_\mathrm{s})
+    drop: true
+  A_s:
+    value: 'lambda logA: 1e-10*np.exp(logA)'
+    latex: A_\mathrm{s}
+  n_s:
+    prior:
+      min: 0.9
+      max: 1.1
+    ref:
+      dist: norm
+      loc: 0.965
+      scale: 0.004
+    proposal: 0.002
+    latex: n_\mathrm{s}
+  theta_s_1e2:
+    prior:
+      min: 1.030
+      max: 1.050
+    ref:
+      dist: norm
+      loc: 1.0416
+      scale: 0.0004
+    proposal: 0.0002
+    latex: 100\theta_\mathrm{s}
+    drop: true
+  100*theta_s:
+    value: 'lambda theta_s_1e2: theta_s_1e2'
+    derived: false
+  H0:
+    latex: H_0
+  omega_b:
+    prior:
+      min: 0.017
+      max: 0.027
+    ref:
+      dist: norm
+      loc: 0.0224
+      scale: 0.0001
+    proposal: 0.0001
+    latex: \Omega_\mathrm{b} h^2
+  omega_cdm:
+    prior:
+      min: 0.09
+      max: 0.15
+    ref:
+      dist: norm
+      loc: 0.12
+      scale: 0.001
+    proposal: 0.0005
+    latex: \Omega_\mathrm{c} h^2
+  Omega_m:
+    latex: \Omega_\mathrm{m}
+  omegamh2:
+    derived: 'lambda Omega_m, H0: Omega_m*(H0/100)**2'
+    latex: \Omega_\mathrm{m} h^2
+  m_ncdm:
+    value: 0.06
+    renames: mnu
+  Omega_Lambda:
+    latex: \Omega_\Lambda
+  YHe:
+    latex: Y_\mathrm{P}
+  tau_reio:
+    prior:
+      min: 0.01
+      max: 0.15
+    ref:
+      dist: norm
+      loc: 0.055
+      scale: 0.006
+    proposal: 0.003
+    latex: \tau_\mathrm{reio}
+  z_reio:
+    latex: z_\mathrm{re}
+  sigma8:
+    latex: \sigma_8
+  s8h5:
+    derived: 'lambda sigma8, H0: sigma8*(H0*1e-2)**(-0.5)'
+    latex: \sigma_8/h^{0.5}
+  s8omegamp5:
+    derived: 'lambda sigma8, Omega_m: sigma8*Omega_m**0.5'
+    latex: \sigma_8 \Omega_\mathrm{m}^{0.5}
+  s8omegamp25:
+    derived: 'lambda sigma8, Omega_m: sigma8*Omega_m**0.25'
+    latex: \sigma_8 \Omega_\mathrm{m}^{0.25}
+  A:
+    derived: 'lambda A_s: 1e9*A_s'
+    latex: 10^9 A_\mathrm{s}
+  clamp:
+    derived: 'lambda A_s, tau_reio: 1e9*A_s*np.exp(-2*tau_reio)'
+    latex: 10^9 A_\mathrm{s} e^{-2\tau}
+  age:
+    latex: '{\rm{Age}}/\mathrm{Gyr}'
+  rs_drag:
+    latex: r_\mathrm{drag}
+  chi2__CMB:
+    derived: 'lambda chi2__planck_2018_lowl_TT, chi2__planck_2018_lowl_EE, chi2__planck_2018_highl_plik_TTTEEE,
+      chi2__planck_2018_lensing_clik: sum([chi2__planck_2018_lowl_TT, chi2__planck_2018_lowl_EE,
+      chi2__planck_2018_highl_plik_TTTEEE, chi2__planck_2018_lensing_clik])'
+    latex: \chi^2_\mathrm{CMB}
+
+  Omega_Lambda: 0
+  Omega_fld: 0
+  Omega_scf: -1
+  # use_ppf: yes
+  # c_gamma_over_c_fld: 0.4
+  # w0_fld: -0.9
+  # wa_fld: 0.
+  # cs2_fld: 1
+  # scf_lambda: 1
+  # scf_alpha: 1
+  # scf_A: 1
+  # scf_B: 1
+  # phi: 1
+  # phi_prime: 0.0
+  n_scf: 3
+  CC_scf: 1
+  scf_tuning_index: 3
+  log10z_c:
+    prior:
+      min: 3.1
+      max: 4.3
+    proposal: 0.001
+    latex: log_{10}(z_c)
+
+  fEDE:
+    prior:
+      min: 0.001
+      max: 0.5
+    proposal: 0.0001
+    latex: f_{EDE}
+
+  thetai_scf:
+    prior:
+      min: 0.1
+      max: 3.1
+    proposal: 0.001
+    latex: \theta_i
+
+sampler:
+  mcmc:
+    covmat: auto
+    drag: true
+    proposal_scale: 1.9
+
+packages_path: '/sps/planck/Users/tlouis/development/test_adrien/modules/'
+modules: '/sps/planck/Users/tlouis/development/test_adrien/modules/'
+
+theory:
+  classy:
+    #stop_at_error: True
+    extra_args:
+      non linear: halofit
+      scf_parameters: 1, 1, 1, 1, 1, 0.0
+      attractor_ic_scf: "no"
+      l_max_scalars: 3508
+      P_k_max_h/Mpc: 30
+      z_max_pk: 2.
+      N_ncdm: 1
+      N_ur: 2.0328
