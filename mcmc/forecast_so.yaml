@@ -52,7 +52,7 @@ params:
     latex: \tau_\mathrm{reio}
   mnu: 0.06
   omk: 0
-  
+
 #FOREGROUNDS PARAMETERS
   a_tSZ: 3.3
     #prior:
@@ -130,9 +130,6 @@ theory:
       halofit_version: mead
       bbn_predictor: PArthENoPE_880.2_standard.dat
       max_l: 9000
-      AccuracyBoost: 1
-      lAccuracyBoost: 1
-      lSampleBoost: 1
       DoLateRadTruncation: False
       standard_neutrino_neff: 3.046
       num_massive_neutrinos: 1

@@ -91,13 +91,17 @@ def get_cl_dict(cosmo_parameters, fg_parameters, ell_max, freq_list,
         'T_d': 9.6
     }
 
-    pars = camb.CAMBparams()
+    pars = camb.CAMBparams(NonLinearModel=camb.nonlinear.Halofit(halofit_version="mead"))
     pars.set_cosmology(H0=cosmo_parameters[0],
                        ombh2=cosmo_parameters[1],
                        omch2=cosmo_parameters[2],
                        mnu=0.06,
                        omk=0,
-                       tau=cosmo_parameters[5])
+                       tau=cosmo_parameters[5],
+                       YHe=0.24,
+                       bbn_predictor="PArthENoPE_880.2_standard.dat",
+                       standard_neutrino_neff=3.046,
+                       num_massive_neutrinos=1)
 
     pars.InitPower.set_params(As=1e-10 * np.exp(cosmo_parameters[3]),
                               ns=cosmo_parameters[4],
@@ -324,11 +328,11 @@ def pre_calculation(cosmo_parameters, fg_parameters, ell_max, freq_list,
     if binned:
 
         pickle.dump(cl_dict, open(
-            os.path.join(save_path, 'power_spectrums_binned.p'), 'wb'))
+            os.path.join(save_path, 'power_spectrums_binned_{0}.p'.format(bin_width)), 'wb'))
         pickle.dump(cov_dict, open(
-            os.path.join(save_path, 'covariance_binned.p'),'wb'))
+            os.path.join(save_path, 'covariance_binned_{0}.p'.format(bin_width)),'wb'))
         pickle.dump(deriv_dict, open(
-            os.path.join(save_path, 'deriv_binned.p'),'wb'))
+            os.path.join(save_path, 'deriv_binned_{0}.p'.format(bin_width)),'wb'))
 
     else:
 

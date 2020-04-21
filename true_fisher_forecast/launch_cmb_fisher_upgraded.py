@@ -19,11 +19,11 @@ name_param_fig = [
     r'$a_c$', r'$\beta_c$', r'$a_s$'
 ]
 
-#names = [
-#    'H0', 'Ombh2', 'Omch2', 'As', 'ns', 'tau', 'atSZ', 'akSZ', 'ap', 'betap',
-#    'ac', 'betac', 'amp_s']
 names = [
-        'H0', 'Ombh2', 'Omch2', 'As', 'ns', 'tau']
+    'H0', 'Ombh2', 'Omch2', 'As', 'ns', 'tau', 'atSZ', 'akSZ', 'ap', 'betap',
+    'ac', 'betac', 'amp_s']
+#names = [
+#        'H0', 'Ombh2', 'Omch2', 'As', 'ns', 'tau']
 
 
 
@@ -32,9 +32,9 @@ names = [
 planck_parameters = [67.66, 0.02242, 0.11933, 3.047, 0.9665, 0.0561]
 fg_parameters = [3.3, 1.66, 6.91, 2.07, 4.88, 2.2, 3.09]
 
-#frequency_list = [27, 39, 93, 145, 225, 280]
+frequency_list = [27, 39, 93, 145, 225, 280]
 
-frequency_list = [93, 145, 225]
+#frequency_list = [93, 145, 225]
 ### The frequency list must be in ascending order
 
 
@@ -45,12 +45,12 @@ n_split = 2
 mode = ['tt', 'ee', 'te', 'all']
 
 binned = True
-bin_width = 20
+bin_width = 30
 
 ################################################################################
 
-calculate_data = False
-create_fisher_matrix = True
+calculate_data = True
+create_fisher_matrix = False
 plot_forecast = False
 
 if calculate_data:

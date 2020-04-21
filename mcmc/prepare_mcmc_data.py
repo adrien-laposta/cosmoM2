@@ -64,13 +64,17 @@ def get_cl_dict(cosmo_parameters, fg_parameters, ell_max, freq_list, bin_width):
         'T_d': 9.6
     }
 
-    pars = camb.CAMBparams()
+    pars = camb.CAMBparams(NonLinearModel=camb.nonlinear.Halofit(halofit_version="mead"))
     pars.set_cosmology(cosmomc_theta=cosmo_parameters[0],
                        ombh2=cosmo_parameters[1],
                        omch2=cosmo_parameters[2],
                        mnu=0.06,
                        omk=0,
-                       tau=cosmo_parameters[5])
+                       tau=cosmo_parameters[5],
+                       YHe=0.24,
+                       bbn_predictor="PArthENoPE_880.2_standard.dat",
+                       standard_neutrino_neff=3.046,
+                       num_massive_neutrinos=1)
 
     pars.InitPower.set_params(As=1e-10 * np.exp(cosmo_parameters[3]),
                               ns=cosmo_parameters[4],

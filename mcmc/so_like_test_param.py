@@ -16,9 +16,8 @@ lmax = 4500
 lmin = 2
 bin_width = 20
 
-#planck_parameters = [67.4, 0.02207, 0.1196, 3.098, 0.9616, 0.097]
-planck_parameters = [57.47255, 0.025364564, 0.14982677, 3.4991506, 1.0983872, -0.09328858]
-fg_parameters = [3.3, 1.66, 6.91, 2.07, 4.88, 2.2, 3.09]
+planck_parameters = [67.66, 0.02242, 0.11933, 3.047, 0.9665, 0.0561]
+
 
 frequency_list = [93, 145, 225]
 
@@ -37,7 +36,8 @@ def minus_log_like(a_tSZ, a_kSZ, a_p, beta_p, a_c, beta_c, n_CIBC, a_s, T_d,
                               ns=cosmo_parameters[4],
                               r=0)
     ell_max = 4500
-    pars.set_for_lmax(ell_max - 1, lens_potential_accuracy=0)
+    pars.set_for_lmax(ell_max - 1, lens_potential_accuracy=3)
+    pars.set_accuracy(AccuracyBoost=3, lAccuracyBoost=2, DoLateRadTruncation=False )
     results = camb.get_results(pars)
     powers = results.get_cmb_power_spectra(pars, CMB_unit="muK")
     totCL = powers['total']
@@ -113,9 +113,33 @@ def minus_log_like(a_tSZ, a_kSZ, a_p, beta_p, a_c, beta_c, n_CIBC, a_s, T_d,
     minloglike_ell = [-0.5*(data[ell] - model_list[ell]).dot(
                       inv_covariances[ell].dot(data[ell] - model_list[ell])) for ell in range(n_bin)]
 
-    return (binned_ell, minloglike_ell, model_list, data)
+    return (binned_ell, np.sum(minloglike_ell), model_list, data)
 
-#print(minus_log_like(3.3,1.66,6.91,2.07,4.88,2.2,1.2,3.09,9.6,planck_parameters))
+
+
+
+print(minus_log_like(3.3,1.66,6.91,2.07,4.88,2.2,1.2,3.09,9.6,planck_parameters)[1])
+liste = [2067.2407154756575,
+         2058.92235298762,
+         2058.991274381118,
+         2059.070800580806,
+         2063.280954365685,
+         2062.992962573868,
+         2068.4388471718416,
+         2069.8050270975664,
+         2056.815394633337,
+         2056.6203407712187,
+         2057.838244149974,
+         2057.002799512057,
+         2056.820705977457
+         ]
+plt.figure()
+plt.hist(liste)
+plt.show()
+print((np.max(liste)-np.min(liste))/np.min(liste))
+
+
+a = """
 plt.figure()
 plt.xlabel(r'$\ell$')
 plt.ylabel(r'$\chi^2/ndf$')
@@ -143,3 +167,4 @@ plt.plot(L_model)
 plt.scatter(np.arange(len(L_data)),L_data,linewidth=0.5, color = 'k')
 plt.yscale('log')
 plt.show()
+"""
