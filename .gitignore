@@ -60,3 +60,4 @@ target/
 #*.p
 /true_fisher_forecast/pre_calc/
 /true_fisher_forecast/recover_covar_test/
+/mcmc/outputs/
